@@ -36,6 +36,7 @@ export default function HomePage() {
   const [statsVisible, setStatsVisible] = useState(false);
   const [counters, setCounters] = useState({ projects: 0, clients: 0, years: 0 });
   const [activeTestimonial, setActiveTestimonial] = useState(0);
+  const [videoAvailable, setVideoAvailable] = useState(true);
 
   useEffect(() => {
     if (!heroRef.current || !videoRef.current || !overlayRef.current) return;
@@ -158,16 +159,27 @@ export default function HomePage() {
       <section ref={heroRef} className="relative min-h-screen bg-black">
         <div ref={overlayRef} className="absolute inset-0 bg-hero-gradient" />
         <div className="absolute inset-0 overflow-hidden">
-          <video
-            ref={videoRef}
-            className="absolute inset-0 h-full w-full object-cover"
-            src="/Home.mp4"
-            preload="metadata"
-            playsInline
-            muted
-            controls={false}
-            loop={false}
-          />
+          {videoAvailable ? (
+            <video
+              ref={videoRef}
+              className="absolute inset-0 h-full w-full object-cover"
+              src="/Home.mp4"
+              preload="metadata"
+              playsInline
+              muted
+              controls={false}
+              loop={false}
+              onError={() => setVideoAvailable(false)}
+            />
+          ) : (
+            <div className="absolute inset-0 flex items-center justify-center bg-black">
+              <div className="text-center px-6">
+                <p className="text-sm uppercase tracking-[0.35em] text-white/60">Video asset unavailable</p>
+                <h2 className="mt-4 text-3xl font-semibold text-white">Premium cinematic scroll experience</h2>
+                <p className="mt-3 text-sm leading-6 text-white/70">Replace <span className="font-medium text-white">public/Home.mp4</span> with the original video file for full effect.</p>
+              </div>
+            </div>
+          )}
           <div className="absolute inset-0 bg-black/35" />
         </div>
 
