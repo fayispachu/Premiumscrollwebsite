@@ -2,11 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Lenis from 'lenis';
-// a
-gsap.registerPlugin(ScrollTrigger);
 
 const services = [
   { title: 'Web Development', description: 'Crafting fast, accessible, and polished digital products with modern architecture.' },
@@ -39,72 +35,89 @@ export default function HomePage() {
   const [videoAvailable, setVideoAvailable] = useState(true);
 
   useEffect(() => {
-    if (!heroRef.current || !videoRef.current || !overlayRef.current) return;
-
-    const lenis = new Lenis({ duration: 1.2, lerp: 0.14, smoothWheel: true, autoRaf: true });
-    lenis.on('scroll', ScrollTrigger.update);
-
-    ScrollTrigger.scrollerProxy(document.body, {
-      scrollTop(value) {
-        return arguments.length ? window.scrollTo(0, value as number) : window.scrollY;
-      },
-      getBoundingClientRect() {
-        return { top: 0, left: 0, width: window.innerWidth, height: window.innerHeight };
-      },
-    });
-
-    const pinDistance = window.innerHeight * 1.3;
+    let lenis: any;
+    let pin: any;
+    let fade: any;
+    let ScrollTrigger: any;
     let seekRafId = 0;
+    let onResize: (() => void) | null = null;
 
-    const pin = ScrollTrigger.create({
-      trigger: heroRef.current,
-      start: 'top top',
-      end: `+=${pinDistance}`,
-      pin: true,
-      scrub: 0.8,
-      onUpdate(self) {
-        scrollProgressRef.current = self.progress;
-        const video = videoRef.current;
-        if (!video?.duration) return;
+    async function init() {
+      if (!heroRef.current || !videoRef.current || !overlayRef.current) return;
 
-        const targetTime = Math.min(video.duration, self.progress * video.duration);
-        
-        // Cancel any pending RAF update
-        cancelAnimationFrame(seekRafId);
-        
-        // Schedule smooth seek on next frame for better performance
-        seekRafId = requestAnimationFrame(() => {
-          try {
-            video.currentTime = targetTime;
-          } catch (e) {
-            // ignore seek errors
-          }
-        });
-      },
-    });
+      const gsapModule = (await import('gsap')).default;
+      const scrollTriggerModule = await import('gsap/ScrollTrigger');
+      ScrollTrigger = scrollTriggerModule.ScrollTrigger;
+      gsapModule.registerPlugin(ScrollTrigger);
 
-    const fade = gsap.to(overlayRef.current, {
-      opacity: 0,
-      ease: 'none',
-      scrollTrigger: {
+      if (videoRef.current) {
+        videoRef.current.pause();
+        videoRef.current.currentTime = 0;
+      }
+
+      lenis = new Lenis({ duration: 1.2, lerp: 0.14, smoothWheel: true, autoRaf: true });
+      lenis.on('scroll', ScrollTrigger.update);
+
+      ScrollTrigger.scrollerProxy(document.body, {
+        scrollTop(value: number) {
+          return arguments.length ? window.scrollTo(0, value as number) : window.scrollY;
+        },
+        getBoundingClientRect() {
+          return { top: 0, left: 0, width: window.innerWidth, height: window.innerHeight };
+        },
+      });
+
+      const pinDistance = window.innerHeight * 1.3;
+
+      pin = ScrollTrigger.create({
         trigger: heroRef.current,
-        start: 'bottom bottom',
-        end: `+=${window.innerHeight * 0.8}`,
-        scrub: true,
-      },
-    });
+        start: 'top top',
+        end: `+=${pinDistance}`,
+        pin: true,
+        scrub: 0.8,
+        onUpdate(self: any) {
+          scrollProgressRef.current = self.progress;
+          const video = videoRef.current;
+          if (!video?.duration) return;
 
-    const onResize = () => ScrollTrigger.refresh();
-    window.addEventListener('resize', onResize);
-    ScrollTrigger.refresh();
+          const targetTime = Math.min(video.duration, self.progress * video.duration);
+
+          cancelAnimationFrame(seekRafId);
+          seekRafId = requestAnimationFrame(() => {
+            try {
+              video.currentTime = targetTime;
+            } catch (e) {
+              // ignore seek errors
+            }
+          });
+        },
+      });
+
+      fade = gsapModule.to(overlayRef.current, {
+        opacity: 0,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: heroRef.current,
+          start: 'bottom bottom',
+          end: `+=${window.innerHeight * 0.8}`,
+          scrub: true,
+        },
+      });
+
+      onResize = () => ScrollTrigger.refresh();
+      window.addEventListener('resize', onResize);
+      ScrollTrigger.refresh();
+    }
+
+    init();
 
     return () => {
-      window.removeEventListener('resize', onResize);
+      if (onResize) window.removeEventListener('resize', onResize);
       cancelAnimationFrame(seekRafId);
-      pin.kill();
-      fade.kill();
-      lenis.destroy();
-      ScrollTrigger.getAll().forEach((instance) => instance.kill());
+      pin?.kill();
+      fade?.kill();
+      lenis?.destroy();
+      ScrollTrigger?.getAll?.()?.forEach((instance: any) => instance.kill());
     };
   }, []);
 
@@ -165,11 +178,14 @@ export default function HomePage() {
               className="absolute inset-0 h-full w-full object-cover"
               src="/Home.mp4"
               preload="auto"
-              autoPlay
               playsInline
               muted
               controls={false}
               loop={false}
+              onLoadedMetadata={() => {
+                videoRef.current?.pause();
+                if (videoRef.current) videoRef.current.currentTime = 0;
+              }}
               onError={() => setVideoAvailable(false)}
             />
           ) : (
