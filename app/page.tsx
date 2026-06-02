@@ -164,7 +164,8 @@ export default function HomePage() {
               ref={videoRef}
               className="absolute inset-0 h-full w-full object-cover"
               src="/Home.mp4"
-              preload="metadata"
+              preload="auto"
+              autoPlay
               playsInline
               muted
               controls={false}
