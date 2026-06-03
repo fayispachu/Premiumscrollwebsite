@@ -173,21 +173,22 @@ export default function HomePage() {
         <div ref={overlayRef} className="absolute inset-0 bg-hero-gradient" />
         <div className="absolute inset-0 overflow-hidden">
           {videoAvailable ? (
-            <video
-              ref={videoRef}
-              className="absolute inset-0 h-full w-full object-cover"
-              src="/Home.mp4"
-              preload="auto"
-              playsInline
-              muted
-              controls={false}
-              loop={false}
-              onLoadedMetadata={() => {
-                videoRef.current?.pause();
-                if (videoRef.current) videoRef.current.currentTime = 0;
-              }}
-              onError={() => setVideoAvailable(false)}
-            />
+           <video
+  ref={videoRef}
+  className="absolute inset-0 h-full w-full object-cover"
+  src="/Home.mp4"
+  preload="auto"
+  playsInline
+  muted
+  autoPlay
+  controls={false}
+  loop={false}
+  onLoadedMetadata={() => {
+    videoRef.current?.pause();
+    if (videoRef.current) videoRef.current.currentTime = 0;
+  }}
+  onError={() => setVideoAvailable(false)}
+/>
           ) : (
             <div className="absolute inset-0 flex items-center justify-center bg-black">
               <div className="text-center px-6">
