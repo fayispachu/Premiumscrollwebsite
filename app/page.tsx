@@ -169,25 +169,25 @@ export default function HomePage() {
     <main className="bg-ink text-white overflow-x-hidden selection:bg-fuchsia-500/30 selection:text-white">
 
 
-      <section ref={heroRef} className="relative min-h-screen bg-black">
+      <section ref={heroRef} className="relative w-full min-h-[100dvh] bg-black">
         <div ref={overlayRef} className="absolute inset-0 bg-hero-gradient" />
         <div className="absolute inset-0 overflow-hidden">
           {videoAvailable ? (
-           <video
-  ref={videoRef}
-  className="absolute inset-0 h-full w-full object-cover"
-  src="/Home.mp4"
-  preload="auto"
-  playsInline
-  muted
-  autoPlay
-  controls={false}
-  loop={false}
-  onLoadedMetadata={() => {
-    videoRef.current?.pause();
-    if (videoRef.current) videoRef.current.currentTime = 0;
-  }}
-  onError={() => setVideoAvailable(false)}
+            <video
+              ref={videoRef}
+              className="absolute inset-0 h-full w-full min-h-[100dvh] object-cover"
+              src="/Home.mp4"
+              preload="auto"
+              playsInline
+              muted
+              autoPlay
+              controls={false}
+              loop={false}
+              onLoadedMetadata={() => {
+                videoRef.current?.pause();
+                if (videoRef.current) videoRef.current.currentTime = 0;
+              }}
+              onError={() => setVideoAvailable(false)}
 />
           ) : (
             <div className="absolute inset-0 flex items-center justify-center bg-black">
