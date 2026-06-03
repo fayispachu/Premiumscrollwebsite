@@ -169,13 +169,13 @@ export default function HomePage() {
     <main className="bg-ink text-white overflow-x-hidden selection:bg-fuchsia-500/30 selection:text-white">
 
 
-      <section ref={heroRef} className="relative w-full min-h-[100dvh] bg-black">
+      <section ref={heroRef} className="relative w-full h-screen min-h-screen bg-black">
         <div ref={overlayRef} className="absolute inset-0 bg-hero-gradient" />
         <div className="absolute inset-0 overflow-hidden">
           {videoAvailable ? (
             <video
               ref={videoRef}
-              className="absolute inset-0 h-full w-full min-h-[100dvh] object-cover"
+              className="absolute inset-0 min-w-full min-h-full w-full h-full object-cover"
               src="/Home.mp4"
               preload="auto"
               playsInline
